@@ -1,6 +1,20 @@
 ## DID Document
 
-A `did:cid` resolution response streams five top-level components to the client:
+A conformant `did:cid` resolution returns only the three members defined by the [[ref: DID-CORE]] DID Resolution data model — the *resolution result*:
+
+```json
+{
+  "didDocument": { ... },
+  "didResolutionMetadata": {
+    "retrieved": "2026-06-15T19:22:45.691Z"
+  },
+  "didDocumentMetadata": { ... }
+}
+```
+
+`didDocument` and `didDocumentMetadata` conform to [[ref: DID-CORE]]; `didResolutionMetadata` conforms to the DID Resolution specification.
+
+The method-specific `didDocumentData` and `didDocumentRegistration` objects are **not** part of the resolution result. They are Archon extensions (described in the Archon Extensions to DID Core section), exposed as dereferenceable resources at the `/data` and `/registration` DID URLs (see DID Resolution and DID URL Dereferencing). Together with the resolution members they form the internal *document set*:
 
 ```json
 {
@@ -14,7 +28,7 @@ A `did:cid` resolution response streams five top-level components to the client:
 }
 ```
 
-`didDocument` and `didDocumentMetadata` conform to [[ref: DID-CORE]]. `didResolutionMetadata` conforms to the DID Resolution specification. `didDocumentData` and `didDocumentRegistration` are Archon extensions described in the Archon Extensions to DID Core section.
+The legacy `/api/v1/did/<did>` endpoint returns this full document set inline for backwards compatibility. The examples in this section show the relevant document-set members for each DID type; under the conformant surface, `didDocumentData` and `didDocumentRegistration` are retrieved by dereferencing rather than inline.
 
 ::: note
 The [[ref: operation chain]] is the authoritative source of truth for a `did:cid` DID. The Gatekeeper stores individual operations (create, update, delete) and reconstructs the DID document by replaying them in [[ref: ordinal key]] order at resolution time. Implementations MAY cache resolved documents for performance, but any cached result MUST remain consistent with a fresh replay of the canonical operation chain. The `didResolutionMetadata.retrieved` timestamp records when the resolution response was generated.

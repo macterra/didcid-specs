@@ -1,8 +1,8 @@
 ## DID Resolution
 
-[[def: resolution, The process of dereferencing a DID to obtain its current (or historical) DID document and metadata]]
+[[def: resolution, The process of returning the DID document and its metadata for a given DID — distinct from dereferencing, which returns a resource identified by a DID URL]]
 
-Resolution is the operation of responding to a DID with a DID Document. If you think of the DID as a secure reference or pointer, then resolution is equivalent to dereferencing.
+Resolution is the operation of returning a DID Document and its metadata for a given DID. It is distinct from *dereferencing*, which returns a resource identified by a DID URL (see DID URL Dereferencing).
 
 Given a DID and an optional resolution time, the resolver retrieves the associated [[ref: seed document]] from IPFS using the DID suffix as the CID, parsing it as plaintext JSON.
 
@@ -66,6 +66,28 @@ function resolveDid(did, versionTime=now):
             apply update to DID document
     return DID document
 ```
+
+### Resolution Result
+
+A conformant resolution returns only the three members defined by the [[ref: DID-CORE]] DID Resolution data model:
+
+- `didDocument`
+- `didResolutionMetadata`
+- `didDocumentMetadata`
+
+The method-specific `didDocumentData` and `didDocumentRegistration` objects are **not** part of the resolution result; they are exposed as dereferenceable resources (see DID URL Dereferencing). Standard document metadata — `created`, `updated`, `versionId`, `versionSequence`, `deactivated`, `canonicalId`, `confirmed` — is carried in `didDocumentMetadata`.
+
+### Endpoints
+
+The conformant resolution and dereferencing surface follows the [Universal Resolver](https://github.com/decentralized-identity/universal-resolver) driver convention:
+
+| DID URL | HTTP | Returns |
+|---------|------|---------|
+| `did:cid:<cid>` | `GET /1.0/identifiers/<did>` | DID Resolution result (the triple) |
+| `did:cid:<cid>/data` | `GET /1.0/identifiers/<did>/data` | The data resource |
+| `did:cid:<cid>/registration` | `GET /1.0/identifiers/<did>/registration` | The registration resource |
+
+This surface always returns confirmed, cryptographically verified state. The legacy `/api/v1/did/<did>` endpoint remains available for backwards compatibility; it returns the richer internal document set (with `didDocumentData` and `didDocumentRegistration` inline) and can return unconfirmed or unverified state.
 
 ### Fallback and Forwarding
 

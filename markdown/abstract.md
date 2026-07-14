@@ -1,6 +1,6 @@
 ## Abstract
 
-The `did:cid` method specification conforms to the requirements specified in the [[ref: DID-CORE]] currently published by the W3C Decentralized Identifier Working Group. For more information about DIDs and DID method specifications, please see the [DID Primer](https://w3c-ccg.github.io/did-primer/).
+The `did:cid` method specification conforms to the requirements specified in [[ref: DID-CORE]], a W3C Recommendation. For more information about DIDs and DID method specifications, please see the [DID Primer](https://w3c-ccg.github.io/did-primer/).
 
 ## Introduction
 
