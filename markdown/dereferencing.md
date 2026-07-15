@@ -8,8 +8,8 @@ Dereferencing a `did:cid` DID URL returns a *resource* associated with the DID, 
 
 This method defines two dereferenceable resources, selected by the DID URL path:
 
-- **`/data`** — `did:cid:<cid>/data` dereferences to the DID's data resource: the bare [[ref: didDocumentData]] object from the internal document set. [[ref: agent, Agent]] DIDs have an empty data resource (`{}`); [[ref: asset]] DIDs return their attached data. A revoked DID's data resource is empty.
-- **`/registration`** — `did:cid:<cid>/registration` dereferences to the DID's registration/anchoring provenance: the [[ref: didDocumentRegistration]] object (registry, type, validity, version), **plus** the anchoring state `confirmed` and, where the registry anchors to a blockchain, `timestamp`. This is method-specific provenance, not [[ref: DID-CORE]] DID document metadata, which is why it is dereferenced rather than embedded in `didDocumentMetadata`. This is where `confirmed` and `timestamp` are surfaced on the conformant surface, having been stripped from `didDocumentMetadata`.
+- **`/data`** — `did:cid:<cid>/data` dereferences to the DID's data resource: the bare [[ref: didDocumentData]] object. An [[ref: agent, Agent]] DID's data resource holds its agent-level `didDocumentData` (e.g. `manifest`, `backupStore` — see Known Uses under Archon Extensions), or `{}` if none has been set; [[ref: asset]] DIDs return their attached data. A revoked DID's data resource is empty.
+- **`/registration`** — `did:cid:<cid>/registration` dereferences to the DID's registration/anchoring provenance: the [[ref: didDocumentRegistration]] object (registry, type, validity, version), **plus** the anchoring state `confirmed` and, where the registry anchors to a blockchain, `timestamp`. This is method-specific provenance, not [[ref: DID-CORE]] DID document metadata, which is why `confirmed` and `timestamp` are surfaced here rather than embedded in `didDocumentMetadata`.
 
 ```json
 {
@@ -31,8 +31,17 @@ This method defines two dereferenceable resources, selected by the DID URL path:
 Neither resource is part of the DID resolution result. Both honor the `versionTime` and `versionSequence` version selectors, and both are returned as plain `application/json`.
 
 ::: note
-Under the conformant `/1.0/identifiers` surface these resources always reflect confirmed, cryptographically verified state. The legacy `/api/v1/did/<did>` endpoint continues to return `didDocumentData` and `didDocumentRegistration` inline within the full document set (with `confirmed` and `timestamp` carried in `didDocumentMetadata`).
+These resources always reflect confirmed, cryptographically verified state.
 :::
+
+### Blockchain Timestamp Bounds
+
+When the DID's registry anchors to a blockchain (Bitcoin, Ethereum, Zcash, Solana, Filecoin), the `timestamp` object in the `/registration` resource (shown above) provides cryptographic upper and lower bounds on when the most recent operation was submitted, derived directly from block data:
+
+- **Lower bound** (`lowerBound`): Present when the operation included a `blockid` field at submission time, referencing a recent block. This proves the operation was created *after* that block was mined — establishing a cryptographic "not before" constraint.
+- **Upper bound** (`upperBound`): Always present for confirmed blockchain operations. Identifies the block in which the operation batch was anchored, proving the operation existed *before* the subsequent block — establishing a "not after" constraint.
+
+Together, the bounds define an independently verifiable time window without relying on self-asserted client timestamps. They can be verified by any party with access to the relevant blockchain, providing legal-grade timestamping for DID operations.
 
 ### Fragments
 

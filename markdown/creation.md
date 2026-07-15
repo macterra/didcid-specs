@@ -28,7 +28,7 @@ To create an [[ref: agent]] DID, the client must sign and submit a create operat
 
 1. Sign the JSON with the private key corresponding to the public key (this enables the node to verify that the operation is coming from the owner of the public key).
    - The `proof.verificationMethod` must be set to `#key-1` (a relative reference) since the DID does not yet exist.
-1. Submit the operation to a node (e.g., `POST /api/v1/did/`).
+1. Submit the signed operation to a node's DID endpoint.
 
 #### Agent Create Example
 
@@ -88,7 +88,7 @@ To create an [[ref: asset]] DID, the client must sign and submit a create operat
 
 1. Sign the JSON with the private key of the controller.
    - The `proof.verificationMethod` must be the **full DID reference** of the controller (e.g., `did:cid:abc123#key-1`).
-1. Submit the operation to a node (e.g., `POST /api/v1/did/`).
+1. Submit the signed operation to a node's DID endpoint.
 
 #### Asset Create Example
 

@@ -16,7 +16,7 @@ A DID Update is a change to any of the documents associated with the DID. To ini
 
 1. Create an update operation object with the fields above.
 1. Sign the JSON with the private key of the controller of the DID.
-1. Submit the operation to a node (e.g., `POST /api/v1/did/`).
+1. Submit the signed operation to a node's DID endpoint.
 
 ::: note
 It is recommended that the client fetches the current version of the document and metadata, makes changes to it, then submits the new version in an update operation in order to preserve fields that should not change.
