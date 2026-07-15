@@ -77,9 +77,9 @@ A conformant resolution returns only the three members defined by the [[ref: DID
 
 The method-specific `didDocumentData` and `didDocumentRegistration` objects are **not** part of the resolution result; they are exposed as dereferenceable resources (see DID URL Dereferencing). Standard document metadata — `created`, `updated`, `deleted`, `deactivated`, `versionId`, `versionSequence`, `canonicalId` — is carried in `didDocumentMetadata`.
 
-The method-specific `confirmed` and `timestamp` fields are **not** [[ref: DID-CORE]] document metadata, so the conformant surface does not carry them in `didDocumentMetadata`; they are anchoring provenance, returned with the registration resource at `/registration`. The legacy `/api/v1/did/<did>` endpoint continues to include both inline in `didDocumentMetadata`.
+The method-specific `confirmed` and `timestamp` fields are **not** [[ref: DID-CORE]] document metadata, so they are not carried in `didDocumentMetadata`; they are anchoring provenance, returned with the registration resource at `/registration`.
 
-`didResolutionMetadata` carries `contentType` — the media type of the returned representation. It does **not** carry the `retrieved` timestamp that the legacy endpoint returns, since that value changes on every call and is not part of the [[ref: DID-CORE]] resolution metadata.
+`didResolutionMetadata` carries `contentType` — the media type of the returned representation.
 
 ```json
 {
@@ -108,7 +108,7 @@ Responses set `Vary: Accept`. This applies to the resolution result only; the `/
 
 ### Endpoints
 
-The conformant resolution and dereferencing surface follows the [Universal Resolver](https://github.com/decentralized-identity/universal-resolver) driver convention:
+The resolution and dereferencing surface follows the [Universal Resolver](https://github.com/decentralized-identity/universal-resolver) driver convention:
 
 | DID URL | HTTP | Returns |
 |---------|------|---------|
@@ -116,7 +116,7 @@ The conformant resolution and dereferencing surface follows the [Universal Resol
 | `did:cid:<cid>/data` | `GET /1.0/identifiers/<did>/data` | The data resource |
 | `did:cid:<cid>/registration` | `GET /1.0/identifiers/<did>/registration` | The registration resource |
 
-This surface always returns confirmed, cryptographically verified state. The legacy `/api/v1/did/<did>` endpoint remains available for backwards compatibility; it returns the richer internal document set (with `didDocumentData` and `didDocumentRegistration` inline) and can return unconfirmed or unverified state.
+This surface always returns confirmed, cryptographically verified state.
 
 ### Fallback and Forwarding
 
