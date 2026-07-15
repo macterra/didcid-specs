@@ -60,6 +60,17 @@ A resolved [[ref: agent]] DID document includes a verification method and the st
     ],
     "authentication": ["#key-1"],
     "assertionMethod": ["#key-1"]
+  },
+  "didDocumentMetadata": {
+    "created": "2026-01-14T19:29:06Z",
+    "versionId": "bafkreig6rjxbv2aopv47dgxhnxepqpb4yrxf2nvzrhmhdqthojfdxuxjbe",
+    "versionSequence": "1"
+  },
+  "didDocumentData": {},
+  "didDocumentRegistration": {
+    "version": 1,
+    "type": "agent",
+    "registry": "hyperswarm"
   }
 }
 ```
@@ -109,8 +120,13 @@ A resolved [[ref: asset]] DID document identifies its controlling agent and carr
 {
   "didDocument": {
     "@context": ["https://www.w3.org/ns/did/v1"],
-    "id": "did:cid:bagaaieraasseteqbvhalzexldr5mdmbmt553tqq3ifqd56mvhifppvyfdc32q",
+    "id": "did:cid:bagaaiera...asset",
     "controller": "did:cid:bagaaieradidcs4hohalzexldr5mdmbmt553tqq3ifqd56mvhifppvyfdc32q"
+  },
+  "didDocumentMetadata": {
+    "created": "2026-01-14T19:32:24Z",
+    "versionId": "bagaaiera...asset",
+    "versionSequence": "1"
   },
   "didDocumentData": {
     "group": {
