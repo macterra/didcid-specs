@@ -10,4 +10,4 @@ The **key concept of this design** is that DID creation is decentralized through
 |-------|---------------|----------|-------------|
 | Created | `false` | Seed document | Initial anchor on IPFS, resolvable immediately |
 | Active | `false` | Latest version | One or more valid updates applied |
-| Revoked | `true` | Empty | Controller removed, no further mutations possible |
+| Revoked | `true` | `id` only | Controller removed, no further mutations possible |

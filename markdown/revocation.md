@@ -2,7 +2,7 @@
 
 [[def: delete operation, A signed operation that permanently deactivates a DID by removing its controller, making the DID unresolvable for active use]]
 
-Revoking a DID is a special kind of Update that results in the termination of the DID. Revoked DIDs cannot be updated because they have no controller, therefore they **cannot be recovered** once revoked. Revoked DIDs can be resolved without error, but resolvers will return a document set with the `didMetadata.deactivated` property set to `true`. The resolved `didDocument` contains only the `id` field (the DID itself); `didDocumentData` is returned as an empty object.
+Revoking a DID is a special kind of Update that results in the termination of the DID. Revoked DIDs cannot be updated because they have no controller, therefore they **cannot be recovered** once revoked. Revoked DIDs can be resolved without error, but resolvers will return a result with the `didDocumentMetadata.deactivated` property set to `true`. The `didDocument` is reduced to just its `id`, and the DID's data resource (dereferenced at `/data`) is empty.
 
 ### Revocation Flow
 
@@ -40,35 +40,27 @@ Upon receiving the operation, the node must:
 
 ### Post-Revocation Resolution
 
-After revocation is confirmed on the DID's registry, resolving the DID will return:
+After revocation is confirmed on the DID's registry, resolving the DID returns a result like this:
 
 ```json
 {
     "didDocument": {
         "id": "did:cid:bagaaiera7vfnrxrmcvo7prrbmdhpvusroii4y2gir252nzk4jv5nxgkzldha"
     },
+    "didResolutionMetadata": {
+        "contentType": "application/did+ld+json"
+    },
     "didDocumentMetadata": {
         "deactivated": true,
         "created": "2026-01-14T19:32:24Z",
         "deleted": "2026-01-14T19:34:33Z",
         "versionId": "bagaaierats6ttxvpx2l3tat25ota7z7335akfd2iup5loajsdlqcwismkgpq",
-        "versionSequence": "2",
-        "confirmed": true,
-        "isOwned": false
-    },
-    "didDocumentData": {},
-    "didDocumentRegistration": {
-        "version": 1,
-        "type": "asset",
-        "registry": "hyperswarm"
-    },
-    "didResolutionMetadata": {
-        "retrieved": "2026-01-14T19:36:09.115Z"
+        "versionSequence": "2"
     }
 }
 ```
 
-The metadata `deactivated` field is set to `true` to conform to the [[ref: DID-CORE]] specification for [DID Document Metadata](https://www.w3.org/TR/did-core/#did-document-metadata).
+The metadata `deactivated` field is set to `true` to conform to the [[ref: DID-CORE]] specification for [DID Document Metadata](https://www.w3.org/TR/did-core/#did-document-metadata). Resolution of a revoked DID does not error: the revoked DID's data resource, dereferenced at `/data`, returns an empty object (`{}`) with HTTP 200.
 
 ::: warning
 Revocation is **irreversible**. Once a DID is deactivated, there is no controller to sign a recovery operation. Ensure all credentials and references have been migrated before revoking a DID.

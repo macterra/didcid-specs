@@ -1,8 +1,8 @@
 ## DID Resolution
 
-[[def: resolution, The process of dereferencing a DID to obtain its current (or historical) DID document and metadata]]
+[[def: resolution, The process of returning the DID document and its metadata for a given DID — distinct from dereferencing, which returns a resource identified by a DID URL]]
 
-Resolution is the operation of responding to a DID with a DID Document. If you think of the DID as a secure reference or pointer, then resolution is equivalent to dereferencing.
+Resolution is the operation of returning a DID Document and its metadata for a given DID. It is distinct from *dereferencing*, which returns a resource identified by a DID URL (see DID URL Dereferencing).
 
 Given a DID and an optional resolution time, the resolver retrieves the associated [[ref: seed document]] from IPFS using the DID suffix as the CID, parsing it as plaintext JSON.
 
@@ -66,6 +66,57 @@ function resolveDid(did, versionTime=now):
             apply update to DID document
     return DID document
 ```
+
+### Resolution Result
+
+A conformant resolution returns only the three members defined by the [[ref: DID-CORE]] DID Resolution data model:
+
+- `didDocument`
+- `didResolutionMetadata`
+- `didDocumentMetadata`
+
+The method-specific `didDocumentData` and `didDocumentRegistration` objects are **not** part of the resolution result; they are exposed as dereferenceable resources (see DID URL Dereferencing). Standard document metadata — `created`, `updated`, `deleted`, `deactivated`, `versionId`, `versionSequence`, `canonicalId` — is carried in `didDocumentMetadata`.
+
+The method-specific `confirmed` and `timestamp` fields are **not** [[ref: DID-CORE]] document metadata, so the conformant surface does not carry them in `didDocumentMetadata`; they are anchoring provenance, returned with the registration resource at `/registration`. The legacy `/api/v1/did/<did>` endpoint continues to include both inline in `didDocumentMetadata`.
+
+`didResolutionMetadata` carries `contentType` — the media type of the returned representation. It does **not** carry the `retrieved` timestamp that the legacy endpoint returns, since that value changes on every call and is not part of the [[ref: DID-CORE]] resolution metadata.
+
+```json
+{
+  "didDocument": { "id": "did:cid:<cid>", "...": "..." },
+  "didResolutionMetadata": {
+    "contentType": "application/did+ld+json"
+  },
+  "didDocumentMetadata": {
+    "created": "2026-01-14T19:32:24Z",
+    "versionId": "bagaaiera...",
+    "versionSequence": "1"
+  }
+}
+```
+
+### Representations
+
+The resolver negotiates the DID document representation from the `Accept` request header, and echoes the selected media type in both the `Content-Type` response header and `didResolutionMetadata.contentType`:
+
+| `Accept` | Representation |
+|----------|----------------|
+| `application/did+ld+json` (or absent) | JSON-LD — the default |
+| `application/did+json` | Plain JSON |
+
+Responses set `Vary: Accept`. This applies to the resolution result only; the `/data` and `/registration` resources are plain `application/json`.
+
+### Endpoints
+
+The conformant resolution and dereferencing surface follows the [Universal Resolver](https://github.com/decentralized-identity/universal-resolver) driver convention:
+
+| DID URL | HTTP | Returns |
+|---------|------|---------|
+| `did:cid:<cid>` | `GET /1.0/identifiers/<did>` | DID Resolution result (the triple) |
+| `did:cid:<cid>/data` | `GET /1.0/identifiers/<did>/data` | The data resource |
+| `did:cid:<cid>/registration` | `GET /1.0/identifiers/<did>/registration` | The registration resource |
+
+This surface always returns confirmed, cryptographically verified state. The legacy `/api/v1/did/<did>` endpoint remains available for backwards compatibility; it returns the richer internal document set (with `didDocumentData` and `didDocumentRegistration` inline) and can return unconfirmed or unverified state.
 
 ### Fallback and Forwarding
 

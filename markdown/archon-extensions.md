@@ -2,6 +2,10 @@
 
 The `did:cid` method introduces three structural elements that extend the [[ref: DID-CORE]] data model. These extensions are not part of the base DID specification; they are Archon-defined additions that enable the method's key design goals: subject type distinction, pluggable registry anchoring, and an open application data layer.
 
+::: note
+Because they are method-specific, `didDocumentData` and `didDocumentRegistration` are **not** members of the conformant DID resolution result (the `didDocument` / `didResolutionMetadata` / `didDocumentMetadata` triple). Under the conformant `/1.0/identifiers` surface each is retrieved by *dereferencing* the corresponding DID URL — `did:cid:<cid>/data` and `did:cid:<cid>/registration` (see DID URL Dereferencing). The legacy `/api/v1/did/<did>` endpoint returns both inline within the full document set for backwards compatibility.
+:::
+
 ---
 
 ### `didDocumentRegistration`

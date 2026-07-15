@@ -108,7 +108,7 @@ Verifiers MUST resolve the signer's DID **at the time the proof was created** (`
 DID revocation (via a `delete` operation) is **permanent and irreversible**. After a revocation is confirmed on the DID's [[ref: registry]]:
 
 - The DID resolves with `didDocumentMetadata.deactivated: true`.
-- `didDocument` and `didDocumentData` are returned as empty objects.
+- The `didDocument` is reduced to just its `id`, and the DID's data resource (dereferenced at `/data`) is empty.
 - No further update or delete operations are accepted for that DID.
 - Possession of the original BIP-39 seed phrase does not enable recovery.
 

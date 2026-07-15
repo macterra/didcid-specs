@@ -16,6 +16,7 @@
         "update.md",
         "revocation.md",
         "resolution.md",
+        "dereferencing.md",
         "proof-verification.md",
         "recovery.md",
         "archon-extensions.md",
