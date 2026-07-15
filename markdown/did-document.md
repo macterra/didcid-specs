@@ -109,7 +109,7 @@ A resolved [[ref: asset]] DID document identifies its controlling agent and carr
 {
   "didDocument": {
     "@context": ["https://www.w3.org/ns/did/v1"],
-    "id": "did:cid:z3v8AuahaEdEZrY9BGfu4vntYjQECBvDHqCG3mPAfEbn6No7AHh",
+    "id": "did:cid:bagaaieraasseteqbvhalzexldr5mdmbmt553tqq3ifqd56mvhifppvyfdc32q",
     "controller": "did:cid:bagaaieradidcs4hohalzexldr5mdmbmt553tqq3ifqd56mvhifppvyfdc32q"
   },
   "didDocumentData": {

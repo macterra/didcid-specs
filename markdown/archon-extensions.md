@@ -83,11 +83,9 @@ The following `didDocumentData` properties are used by the Archon platform as of
 
 | Property | Feature | Description |
 |----------|---------|-------------|
-| `vault` | Identity backup | DID reference to an encrypted backup asset containing the agent's credentials and relationships; enables full identity recovery from seed phrase alone |
-| `group.vault` | Encrypted storage | [[def: vault, A shared encrypted file store associated with a group DID, accessible to group members via individually derived keys — supports both standard and secret membership configurations]] |
-| `manifest` | DID Manifest | Selectively disclosed public credentials (described below) |
-| `nostr` | Nostr integration | Agent's Nostr identity (`npub`, public key) |
-| `contact` | Identity metadata | Human-readable name, Bitcoin address, and other contact fields |
+| `backupStore` | Identity backup | On an [[ref: agent]] DID: a DID reference to an encrypted backup asset (which holds the agent's credentials and relationships under a `backup` property); enables full identity recovery from the seed phrase alone |
+| `manifest` | DID Manifest | On an [[ref: agent]] DID: selectively disclosed public credentials (described below) |
+| `vault` | Encrypted group storage | On a vault [[ref: asset]] DID: a [[def: vault, A shared encrypted file store associated with a group DID, accessible to group members via individually derived keys — supports both standard and secret membership configurations]] |
 
 Application developers building on `did:cid` are encouraged to use `didDocumentData` for any state that must be cryptographically bound to a DID, publicly resolvable, and part of the verifiable update history.
 
