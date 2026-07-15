@@ -93,6 +93,8 @@ Application developers building on `did:cid` are encouraged to use `didDocumentD
 
 #### DID Manifest
 
+[[def: DID Manifest, An object within didDocumentData.manifest mapping the DID of each held verifiable credential to a manifest entry, through which an agent voluntarily discloses credentials publicly — in publish mode (announcing the credential's existence only) or reveal mode (exposing the full credential)]]
+
 The [[ref: DID Manifest]] illustrates the `didDocumentData` pattern well because it has a clearly defined structure and a two-mode API. It is one specific feature built on `didDocumentData` — not an architectural primitive in its own right.
 
 The manifest is an object within `didDocumentData.manifest` where each key is the DID of a held [[ref: verifiable credential]] and each value is the manifest entry for that credential. It supports two disclosure levels:
