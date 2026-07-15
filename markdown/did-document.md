@@ -28,7 +28,7 @@ The method-specific `didDocumentData` and `didDocumentRegistration` objects are 
 }
 ```
 
-The legacy `/api/v1/did/<did>` endpoint returns this full document set inline for backwards compatibility. The examples in this section show the relevant document-set members for each DID type; under the conformant surface, `didDocumentData` and `didDocumentRegistration` are retrieved by dereferencing rather than inline.
+The legacy `/api/v1/did/<did>` endpoint returns this full document set inline for backwards compatibility. The examples in the subsections below show the **conformant resolution result** for each DID type, as returned by `GET /1.0/identifiers/<did>`; the method-specific `didDocumentData` and `didDocumentRegistration` are not part of it and are retrieved separately by dereferencing (`/data` and `/registration` — see DID URL Dereferencing).
 
 ::: note
 The [[ref: operation chain]] is the authoritative source of truth for a `did:cid` DID. The Gatekeeper stores individual operations (create, update, delete) and reconstructs the DID document by replaying them in [[ref: ordinal key]] order at resolution time. Implementations MAY cache resolved documents for performance, but any cached result MUST remain consistent with a fresh replay of the canonical operation chain. The `didResolutionMetadata.retrieved` timestamp shown in the document set above records when the resolution response was generated; it is returned only by the legacy `/api/v1/did/<did>` endpoint. The conformant surface returns `contentType` instead.
@@ -61,16 +61,13 @@ A resolved [[ref: agent]] DID document includes a verification method and the st
     "authentication": ["#key-1"],
     "assertionMethod": ["#key-1"]
   },
+  "didResolutionMetadata": {
+    "contentType": "application/did+ld+json"
+  },
   "didDocumentMetadata": {
     "created": "2026-01-14T19:29:06Z",
     "versionId": "bafkreig6rjxbv2aopv47dgxhnxepqpb4yrxf2nvzrhmhdqthojfdxuxjbe",
     "versionSequence": "1"
-  },
-  "didDocumentData": {},
-  "didDocumentRegistration": {
-    "version": 1,
-    "type": "agent",
-    "registry": "hyperswarm"
   }
 }
 ```
@@ -114,7 +111,7 @@ Service endpoints are optional. Any DID Core-conformant service type may be used
 
 ### Asset DID Document
 
-A resolved [[ref: asset]] DID document identifies its controlling agent and carries application data in `didDocumentData`. It has no verification methods of its own:
+A resolved [[ref: asset]] DID document identifies its controlling agent and has no verification methods of its own. Its application data is not part of the resolution result — it is dereferenced separately at `/data` (shown below):
 
 ```json
 {
@@ -123,21 +120,24 @@ A resolved [[ref: asset]] DID document identifies its controlling agent and carr
     "id": "did:cid:bagaaiera...asset",
     "controller": "did:cid:bagaaieradidcs4hohalzexldr5mdmbmt553tqq3ifqd56mvhifppvyfdc32q"
   },
+  "didResolutionMetadata": {
+    "contentType": "application/did+ld+json"
+  },
   "didDocumentMetadata": {
     "created": "2026-01-14T19:32:24Z",
     "versionId": "bagaaiera...asset",
     "versionSequence": "1"
-  },
-  "didDocumentData": {
-    "group": {
-      "name": "testgroup",
-      "members": []
-    }
-  },
-  "didDocumentRegistration": {
-    "version": 1,
-    "type": "asset",
-    "registry": "hyperswarm"
+  }
+}
+```
+
+The asset's application data is retrieved by dereferencing `did:cid:<cid>/data` (see DID URL Dereferencing):
+
+```json
+{
+  "group": {
+    "name": "testgroup",
+    "members": []
   }
 }
 ```
@@ -188,7 +188,7 @@ For DIDs using blockchain-based registries (Bitcoin, Ethereum, Zcash, Solana, Fi
     "versionSequence": "2",
     "confirmed": true,
     "timestamp": {
-      "chain": "BTC",
+      "chain": "BTC:mainnet",
       "lowerBound": {
         "time": 1705312800,
         "timeISO": "2024-01-15T10:00:00Z",
