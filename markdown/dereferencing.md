@@ -34,6 +34,15 @@ Neither resource is part of the DID resolution result. Both honor the `versionTi
 These resources always reflect confirmed, cryptographically verified state.
 :::
 
+### Blockchain Timestamp Bounds
+
+When the DID's registry anchors to a blockchain (Bitcoin, Ethereum, Zcash, Solana, Filecoin), the `timestamp` object in the `/registration` resource (shown above) provides cryptographic upper and lower bounds on when the most recent operation was submitted, derived directly from block data:
+
+- **Lower bound** (`lowerBound`): Present when the operation included a `blockid` field at submission time, referencing a recent block. This proves the operation was created *after* that block was mined — establishing a cryptographic "not before" constraint.
+- **Upper bound** (`upperBound`): Always present for confirmed blockchain operations. Identifies the block in which the operation batch was anchored, proving the operation existed *before* the subsequent block — establishing a "not after" constraint.
+
+Together, the bounds define an independently verifiable time window without relying on self-asserted client timestamps. They can be verified by any party with access to the relevant blockchain, providing legal-grade timestamping for DID operations.
+
 ### Fragments
 
 A fragment identifies a node within the DID document — for example `did:cid:<cid>#key-1` dereferences to the verification method whose `id` matches. Per the [[ref: DID-CORE]] processing model, the fragment is applied **client-side** to the resolved DID document (it is not transmitted to the resolver over HTTP); the node whose fully-qualified `id` matches the DID URL is returned.

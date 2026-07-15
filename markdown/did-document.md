@@ -155,44 +155,5 @@ The `didDocumentMetadata` object conforms to [[ref: DID-CORE]] and includes Arch
 | `versionSequence` | Archon | Sequence number of the most recent operation, returned as a string |
 
 ::: note
-The method-specific anchoring-provenance fields `confirmed` and `timestamp` are **not** [[ref: DID-CORE]] document metadata and are therefore not carried in `didDocumentMetadata`. They are returned with the `/registration` resource instead (see DID URL Dereferencing and Blockchain Timestamp Bounds below).
-:::
-
-#### Blockchain Timestamp Bounds
-
-For DIDs using blockchain-based registries (Bitcoin, Ethereum, Zcash, Solana, Filecoin), the `timestamp` object — carried in the `/registration` resource (see DID URL Dereferencing) — provides cryptographic upper and lower bounds on when the most recent operation was submitted, derived directly from block data:
-
-```json
-{
-  "timestamp": {
-    "chain": "BTC:mainnet",
-    "opid": "bagaaiera...",
-    "lowerBound": {
-      "time": 1705312800,
-      "timeISO": "2024-01-15T10:00:00Z",
-      "blockid": "00000000000000000002a7c4...",
-      "height": 826000
-    },
-    "upperBound": {
-      "time": 1705316400,
-      "timeISO": "2024-01-15T11:00:00Z",
-      "blockid": "00000000000000000001b8f2...",
-      "height": 826005,
-      "txid": "a1b2c3d4e5f6...",
-      "txidx": 42,
-      "batchid": "did:cid:bagaaiera...",
-      "opidx": 3
-    }
-  }
-}
-```
-
-**Lower bound** (`lowerBound`): Present when the operation included a `blockid` field at submission time, referencing a recent block. This proves the operation was created *after* that block was mined — establishing a cryptographic "not before" constraint.
-
-**Upper bound** (`upperBound`): Always present for confirmed blockchain operations. Identifies the block in which the operation batch was anchored, proving the operation existed *before* the subsequent block — establishing a "not after" constraint.
-
-Together, the bounds define an independently verifiable time window without relying on self-asserted client timestamps. The bounds can be verified by any party with access to the relevant blockchain, providing legal-grade timestamping for DID operations.
-
-::: note
-For [[ref: registry, registries]] without blockchain consensus (e.g., Hyperswarm), the `timestamp` object is absent. Operation ordering on such registries relies on the P2P consensus mechanism of the registry itself rather than external block timestamps.
+The method-specific anchoring-provenance fields `confirmed` and `timestamp` are **not** [[ref: DID-CORE]] document metadata and are therefore not carried in `didDocumentMetadata`. They are returned with the `/registration` resource instead — see DID URL Dereferencing.
 :::
