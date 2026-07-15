@@ -6,13 +6,13 @@ A conformant `did:cid` resolution returns only the three members defined by the 
 {
   "didDocument": { ... },
   "didResolutionMetadata": {
-    "retrieved": "2026-06-15T19:22:45.691Z"
+    "contentType": "application/did+ld+json"
   },
   "didDocumentMetadata": { ... }
 }
 ```
 
-`didDocument` and `didDocumentMetadata` conform to [[ref: DID-CORE]]; `didResolutionMetadata` conforms to the DID Resolution specification.
+`didDocument` and `didDocumentMetadata` conform to [[ref: DID-CORE]]; `didResolutionMetadata` conforms to the DID Resolution specification. On the conformant surface `didResolutionMetadata` carries `contentType` (the media type of the returned representation — see the Representations subsection under DID Resolution); it does **not** carry the `retrieved` timestamp returned by the legacy endpoint.
 
 The method-specific `didDocumentData` and `didDocumentRegistration` objects are **not** part of the resolution result. They are Archon extensions (described in the Archon Extensions to DID Core section), exposed as dereferenceable resources at the `/data` and `/registration` DID URLs (see DID Resolution and DID URL Dereferencing). Together with the resolution members they form the internal *document set*:
 
@@ -31,7 +31,7 @@ The method-specific `didDocumentData` and `didDocumentRegistration` objects are 
 The legacy `/api/v1/did/<did>` endpoint returns this full document set inline for backwards compatibility. The examples in this section show the relevant document-set members for each DID type; under the conformant surface, `didDocumentData` and `didDocumentRegistration` are retrieved by dereferencing rather than inline.
 
 ::: note
-The [[ref: operation chain]] is the authoritative source of truth for a `did:cid` DID. The Gatekeeper stores individual operations (create, update, delete) and reconstructs the DID document by replaying them in [[ref: ordinal key]] order at resolution time. Implementations MAY cache resolved documents for performance, but any cached result MUST remain consistent with a fresh replay of the canonical operation chain. The `didResolutionMetadata.retrieved` timestamp records when the resolution response was generated.
+The [[ref: operation chain]] is the authoritative source of truth for a `did:cid` DID. The Gatekeeper stores individual operations (create, update, delete) and reconstructs the DID document by replaying them in [[ref: ordinal key]] order at resolution time. Implementations MAY cache resolved documents for performance, but any cached result MUST remain consistent with a fresh replay of the canonical operation chain. The `didResolutionMetadata.retrieved` timestamp shown in the document set above records when the resolution response was generated; it is returned only by the legacy `/api/v1/did/<did>` endpoint. The conformant surface returns `contentType` instead.
 :::
 
 ---
@@ -134,13 +134,14 @@ Asset DIDs support transfer of control: a controller may update the `controller`
 
 #### didResolutionMetadata
 
-The `didResolutionMetadata` object is added by the Gatekeeper at resolution time and conforms to the DID Resolution specification:
+The `didResolutionMetadata` object is added by the Gatekeeper at resolution time and conforms to the DID Resolution specification. The field returned depends on the surface:
 
-| Field | Description |
-|-------|-------------|
-| `retrieved` | ISO 8601 timestamp of when this resolution was computed |
+| Field | Surface | Description |
+|-------|---------|-------------|
+| `contentType` | Conformant | Media type of the returned representation (`application/did+ld+json` or `application/did+json` — see the Representations subsection under DID Resolution) |
+| `retrieved` | Legacy | ISO 8601 timestamp of when this resolution was computed |
 
-Because `retrieved` is set fresh on every call, no two resolution responses for the same DID are identical — even when the underlying DID document has not changed.
+The conformant `/1.0/identifiers` surface returns `contentType`; the legacy `/api/v1/did/<did>` endpoint returns `retrieved`. Because `retrieved` is set fresh on every call, no two legacy resolution responses for the same DID are identical — even when the underlying DID document has not changed.
 
 #### didDocumentMetadata
 
@@ -155,6 +156,10 @@ The `didDocumentMetadata` object conforms to [[ref: DID-CORE]] and includes Arch
 | `versionSequence` | Archon | Sequence number of the most recent operation, returned as a string |
 | `confirmed` | Archon | `true` if the most recent operation is confirmed on the [[ref: registry]] |
 | `timestamp` | Archon | Blockchain timestamp bounds (blockchain registries only — see below) |
+
+::: note
+`confirmed` and `timestamp` are method-specific anchoring provenance, not [[ref: DID-CORE]] document metadata. They appear inline in `didDocumentMetadata` only on the legacy `/api/v1/did/<did>` endpoint. The conformant surface strips both from `didDocumentMetadata` and returns them with the `/registration` resource instead (see DID URL Dereferencing).
+:::
 
 #### Blockchain Timestamp Bounds
 

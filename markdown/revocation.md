@@ -48,20 +48,19 @@ After revocation is confirmed on the DID's registry, resolving the DID returns a
         "id": "did:cid:bagaaiera7vfnrxrmcvo7prrbmdhpvusroii4y2gir252nzk4jv5nxgkzldha"
     },
     "didResolutionMetadata": {
-        "retrieved": "2026-01-14T19:36:09.115Z"
+        "contentType": "application/did+ld+json"
     },
     "didDocumentMetadata": {
         "deactivated": true,
         "created": "2026-01-14T19:32:24Z",
         "deleted": "2026-01-14T19:34:33Z",
         "versionId": "bagaaierats6ttxvpx2l3tat25ota7z7335akfd2iup5loajsdlqcwismkgpq",
-        "versionSequence": "2",
-        "confirmed": true
+        "versionSequence": "2"
     }
 }
 ```
 
-The metadata `deactivated` field is set to `true` to conform to the [[ref: DID-CORE]] specification for [DID Document Metadata](https://www.w3.org/TR/did-core/#did-document-metadata). The revoked DID's data resource, dereferenced at `/data`, is empty.
+The metadata `deactivated` field is set to `true` to conform to the [[ref: DID-CORE]] specification for [DID Document Metadata](https://www.w3.org/TR/did-core/#did-document-metadata). Resolution of a revoked DID does not error: the revoked DID's data resource, dereferenced at `/data`, returns an empty object (`{}`) with HTTP 200.
 
 ::: warning
 Revocation is **irreversible**. Once a DID is deactivated, there is no controller to sign a recovery operation. Ensure all credentials and references have been migrated before revoking a DID.

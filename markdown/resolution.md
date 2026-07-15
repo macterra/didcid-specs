@@ -75,7 +75,36 @@ A conformant resolution returns only the three members defined by the [[ref: DID
 - `didResolutionMetadata`
 - `didDocumentMetadata`
 
-The method-specific `didDocumentData` and `didDocumentRegistration` objects are **not** part of the resolution result; they are exposed as dereferenceable resources (see DID URL Dereferencing). Standard document metadata — `created`, `updated`, `versionId`, `versionSequence`, `deactivated`, `canonicalId`, `confirmed` — is carried in `didDocumentMetadata`.
+The method-specific `didDocumentData` and `didDocumentRegistration` objects are **not** part of the resolution result; they are exposed as dereferenceable resources (see DID URL Dereferencing). Standard document metadata — `created`, `updated`, `deleted`, `deactivated`, `versionId`, `versionSequence`, `canonicalId` — is carried in `didDocumentMetadata`.
+
+The method-specific `confirmed` and `timestamp` fields are **not** [[ref: DID-CORE]] document metadata, so the conformant surface does not carry them in `didDocumentMetadata`; they are anchoring provenance, returned with the registration resource at `/registration`. The legacy `/api/v1/did/<did>` endpoint continues to include both inline in `didDocumentMetadata`.
+
+`didResolutionMetadata` carries `contentType` — the media type of the returned representation. It does **not** carry the `retrieved` timestamp that the legacy endpoint returns, since that value changes on every call and is not part of the [[ref: DID-CORE]] resolution metadata.
+
+```json
+{
+  "didDocument": { "id": "did:cid:<cid>", "...": "..." },
+  "didResolutionMetadata": {
+    "contentType": "application/did+ld+json"
+  },
+  "didDocumentMetadata": {
+    "created": "2026-01-14T19:32:24Z",
+    "versionId": "bagaaiera...",
+    "versionSequence": "1"
+  }
+}
+```
+
+### Representations
+
+The resolver negotiates the DID document representation from the `Accept` request header, and echoes the selected media type in both the `Content-Type` response header and `didResolutionMetadata.contentType`:
+
+| `Accept` | Representation |
+|----------|----------------|
+| `application/did+ld+json` (or absent) | JSON-LD — the default |
+| `application/did+json` | Plain JSON |
+
+Responses set `Vary: Accept`. This applies to the resolution result only; the `/data` and `/registration` resources are plain `application/json`.
 
 ### Endpoints
 
